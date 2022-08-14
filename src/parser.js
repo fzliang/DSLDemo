@@ -12,7 +12,6 @@ let objectAllocator = {
   }
 }
 
-
 function createNode(kind) {
   const nodeConstructor = objectAllocator.getNodeConstructor(kind)
   var node = new nodeConstructor();

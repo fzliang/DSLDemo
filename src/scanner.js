@@ -36,9 +36,9 @@ export const CharacterCodes = {
 export const SyntaxKind = {
   Unknown: 'Unknown',
   EndOfFileToken: 'EndOfFileToken',
-  // Identifiers
+
   Identifier: 'Identifier',
-  // Punctuation
+
   GreaterThanToken: 'GreaterThanToken',
   GreaterThanEqualsToken: 'GreaterThanEqualsToken',
   LessThanToken: 'LessThanToken',
@@ -116,7 +116,7 @@ export function createScanner(text, onError) {
     while (true) {
       if (pos >= len) {
         result += text.substring(start, pos);
-        error('Unexpected_end_of_text')
+        error('解析结尾出错')
         break;
       }
 

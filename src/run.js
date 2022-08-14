@@ -1,6 +1,13 @@
 import { SyntaxKind } from "./scanner";
 import { createParser } from './parser';
-import semver from 'semver';
+
+const gt = require('semver/functions/gt')
+const lt = require('semver/functions/lt')
+const eq = require('semver/functions/eq')
+const neq = require('semver/functions/neq')
+const gte = require('semver/functions/gte')
+const lte = require('semver/functions/lte')
+const valid = require('semver/functions/valid')
 
 function runBinaryExpression(ast, params) {
   let operator = ast.operator;
@@ -8,7 +15,7 @@ function runBinaryExpression(ast, params) {
   let leftValue;
   let rightValue;
 
-  let isSemverMode = false;
+  let isSemverMode;
 
   if (ast.left && ast.right) {
     leftValue = runAST(ast.left, params);
@@ -17,8 +24,8 @@ function runBinaryExpression(ast, params) {
     throw new Error(`runBinaryExpression runtime error lost ast left or right ${JSON.stringify(ast)}`,)
   }
 
-  const leftVersionStr = semver.valid(leftValue);
-  const rightVersionStr = semver.valid(rightValue)
+  const leftVersionStr = valid(leftValue);
+  const rightVersionStr = valid(rightValue)
 
 
   if (!leftVersionStr && !rightVersionStr) {
@@ -34,28 +41,28 @@ function runBinaryExpression(ast, params) {
 
   switch (operator) {
     case SyntaxKind.GreaterThanToken:
-      return isSemverMode ? semver.gt(leftValue, rightValue) : leftValue > rightValue;
+      return isSemverMode ? gt(leftValue, rightValue) : leftValue > rightValue;
 
     case SyntaxKind.GreaterThanEqualsToken:
-      return isSemverMode ? semver.gte(leftValue, rightValue) : leftValue >= rightValue;
+      return isSemverMode ? gte(leftValue, rightValue) : leftValue >= rightValue;
 
     case SyntaxKind.LessThanToken:
-      return isSemverMode ? semver.lt(leftValue, rightValue) : leftValue < rightValue;
+      return isSemverMode ? lt(leftValue, rightValue) : leftValue < rightValue;
 
     case SyntaxKind.LessThanEqualsToken:
-      return isSemverMode ? semver.lte(leftValue, rightValue) : leftValue <= rightValue;
+      return isSemverMode ? lte(leftValue, rightValue) : leftValue <= rightValue;
 
     case SyntaxKind.EqualsEqualsToken:
-      return isSemverMode ? semver.eq(leftValue, rightValue) : leftValue == rightValue;
+      return isSemverMode ? eq(leftValue, rightValue) : leftValue == rightValue;
 
     case SyntaxKind.EqualsEqualsEqualsToken:
-      return isSemverMode ? semver.eq(leftValue, rightValue) : leftValue === rightValue;
+      return leftValue === rightValue;
 
     case SyntaxKind.ExclamationEqualsToken:
-      return isSemverMode ? semver.neq(leftValue, rightValue) : leftValue != rightValue;
+      return isSemverMode ? neq(leftValue, rightValue) : leftValue != rightValue;
 
     case SyntaxKind.ExclamationEqualsEqualsToken:
-      return isSemverMode ? semver.neq(leftValue, rightValue) : leftValue !== rightValue;
+      return leftValue !== rightValue;
 
     case SyntaxKind.AmpersandAmpersandToken:
       return Boolean(leftValue && rightValue);
