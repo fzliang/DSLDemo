@@ -1,13 +1,16 @@
 import { SyntaxKind } from "./scanner";
 import { createParser } from './parser';
 
-const gt = require('semver/functions/gt')
-const lt = require('semver/functions/lt')
-const eq = require('semver/functions/eq')
-const neq = require('semver/functions/neq')
-const gte = require('semver/functions/gte')
-const lte = require('semver/functions/lte')
-const valid = require('semver/functions/valid')
+import valid from 'semver/functions/valid';
+import coerce from 'semver/functions/coerce';
+
+import gt from 'semver/functions/gt';
+import lt from 'semver/functions/lt';
+import eq from 'semver/functions/eq';
+import neq from 'semver/functions/neq';
+import gte from 'semver/functions/gte';
+import lte from 'semver/functions/lte';
+
 
 function runBinaryExpression(ast, params) {
   let operator = ast.operator;
@@ -24,9 +27,8 @@ function runBinaryExpression(ast, params) {
     throw new Error(`runBinaryExpression runtime error lost ast left or right ${JSON.stringify(ast)}`,)
   }
 
-  const leftVersionStr = valid(leftValue);
-  const rightVersionStr = valid(rightValue)
-
+  const leftVersionStr = valid(coerce(leftValue));
+  const rightVersionStr = valid(coerce(rightValue));
 
   if (!leftVersionStr && !rightVersionStr) {
     // 如果左右两边都不是版本字符串，则降级
@@ -41,25 +43,25 @@ function runBinaryExpression(ast, params) {
 
   switch (operator) {
     case SyntaxKind.GreaterThanToken:
-      return isSemverMode ? gt(leftValue, rightValue) : leftValue > rightValue;
+      return isSemverMode ? gt(leftVersionStr, rightVersionStr) : leftValue > rightValue;
 
     case SyntaxKind.GreaterThanEqualsToken:
-      return isSemverMode ? gte(leftValue, rightValue) : leftValue >= rightValue;
+      return isSemverMode ? gte(leftVersionStr, rightVersionStr) : leftValue >= rightValue;
 
     case SyntaxKind.LessThanToken:
-      return isSemverMode ? lt(leftValue, rightValue) : leftValue < rightValue;
+      return isSemverMode ? lt(leftVersionStr, rightVersionStr) : leftValue < rightValue;
 
     case SyntaxKind.LessThanEqualsToken:
-      return isSemverMode ? lte(leftValue, rightValue) : leftValue <= rightValue;
+      return isSemverMode ? lte(leftVersionStr, rightVersionStr) : leftValue <= rightValue;
 
     case SyntaxKind.EqualsEqualsToken:
-      return isSemverMode ? eq(leftValue, rightValue) : leftValue == rightValue;
+      return isSemverMode ? eq(leftVersionStr, rightVersionStr) : leftValue == rightValue;
 
     case SyntaxKind.EqualsEqualsEqualsToken:
       return leftValue === rightValue;
 
     case SyntaxKind.ExclamationEqualsToken:
-      return isSemverMode ? neq(leftValue, rightValue) : leftValue != rightValue;
+      return isSemverMode ? neq(leftVersionStr, rightVersionStr) : leftValue != rightValue;
 
     case SyntaxKind.ExclamationEqualsEqualsToken:
       return leftValue !== rightValue;
