@@ -8,6 +8,8 @@ function runBinaryExpression(ast, params) {
   let leftValue;
   let rightValue;
 
+  let isSemverMode = false;
+
   if (ast.left && ast.right) {
     leftValue = runAST(ast.left, params);
     rightValue = runAST(ast.right, params);
@@ -15,30 +17,45 @@ function runBinaryExpression(ast, params) {
     throw new Error(`runBinaryExpression runtime error lost ast left or right ${JSON.stringify(ast)}`,)
   }
 
+  const leftVersionStr = semver.valid(leftValue);
+  const rightVersionStr = semver.valid(rightValue)
+
+
+  if (!leftVersionStr && !rightVersionStr) {
+    // 如果左右两边都不是版本字符串，则降级
+    isSemverMode = false;
+  } else if (leftVersionStr && rightVersionStr) {
+    // 如果左右两边都是版本字符串，则使用semver匹配
+    isSemverMode = true;
+  } else if (!leftVersionStr || !rightVersionStr) {
+    // 如果左右两边有一个不是版本字符串，则报错
+    throw new Error(`runBinaryExpression runtime error type error ${leftVersionStr}, ${rightVersionStr}`)
+  }
+
   switch (operator) {
     case SyntaxKind.GreaterThanToken:
-      return semver.gt(leftValue, rightValue);
+      return isSemverMode ? semver.gt(leftValue, rightValue) : leftValue > rightValue;
 
     case SyntaxKind.GreaterThanEqualsToken:
-      return semver.gte(leftValue, rightValue);
+      return isSemverMode ? semver.gte(leftValue, rightValue) : leftValue >= rightValue;
 
     case SyntaxKind.LessThanToken:
-      return semver.lt(leftValue, rightValue);
+      return isSemverMode ? semver.lt(leftValue, rightValue) : leftValue < rightValue;
 
     case SyntaxKind.LessThanEqualsToken:
-      return semver.lte(leftValue, rightValue);
+      return isSemverMode ? semver.lte(leftValue, rightValue) : leftValue <= rightValue;
 
     case SyntaxKind.EqualsEqualsToken:
-      return leftValue == rightValue;
+      return isSemverMode ? semver.eq(leftValue, rightValue) : leftValue == rightValue;
 
     case SyntaxKind.EqualsEqualsEqualsToken:
-      return leftValue === rightValue;
+      return isSemverMode ? semver.eq(leftValue, rightValue) : leftValue === rightValue;
 
     case SyntaxKind.ExclamationEqualsToken:
-      return leftValue != rightValue;
+      return isSemverMode ? semver.neq(leftValue, rightValue) : leftValue != rightValue;
 
     case SyntaxKind.ExclamationEqualsEqualsToken:
-      return leftValue !== rightValue;
+      return isSemverMode ? semver.neq(leftValue, rightValue) : leftValue !== rightValue;
 
     case SyntaxKind.AmpersandAmpersandToken:
       return Boolean(leftValue && rightValue);

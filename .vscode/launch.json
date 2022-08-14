@@ -16,7 +16,7 @@
         "--detectOpenHandles"
       ],
       "cwd": "${workspaceFolder}",
-      "preLaunchTask": null,
+      "preLaunchTask": "npm: build",
       "runtimeExecutable": null,
       "runtimeArgs": [
         "--nolazy"
@@ -26,9 +26,6 @@
       },
       "console": "integratedTerminal",
       "sourceMaps": true,
-      "windows": {
-        "program": "${workspaceFolder}/node_modules/jest/bin/jest",
-      }
     }
   ]
 }
