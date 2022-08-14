@@ -1,6 +1,6 @@
 let { createParser, runAST, } = require('../dist/bundle.js')
 
-const ast = createParser('(s == "ios" && sv >= "13.0.0") || (s == "android" && sv >= "8.0.0" && sv <= "12.0.0")').parse();
+const ast = createParser('(s == "ios" && sv >= "13.0.0") || (s == "android" && sv >= "8.0.0" && sv <= "v12")').parse();
 
 test('test || before lt false)', () => {
   expect(runAST(ast, { s: 'ios', sv: "8.0.1" })).toBe(false);
