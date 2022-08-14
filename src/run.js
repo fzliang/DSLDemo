@@ -22,10 +22,28 @@ function runBinaryExpression(ast, params) {
 
   if (ast.left && ast.right) {
     leftValue = runAST(ast.left, params);
-    rightValue = runAST(ast.right, params);
   } else {
     throw new Error(`runBinaryExpression runtime error lost ast left or right ${JSON.stringify(ast)}`,)
   }
+
+  // 如果是 && 或 ||, 右值lazy计算
+  // !==, === 不需要semver
+  switch (operator) {
+    // &&
+    case SyntaxKind.AmpersandAmpersandToken:
+      return Boolean(leftValue && runAST(ast.right, params));
+    // ||
+    case SyntaxKind.BarBarToken:
+      return Boolean(leftValue || runAST(ast.right, params));
+    // ===
+    case SyntaxKind.EqualsEqualsEqualsToken:
+      return leftValue === runAST(ast.right, params);
+    //!==
+    case SyntaxKind.ExclamationEqualsEqualsToken:
+      return leftValue !== runAST(ast.right, params);
+  }
+
+  rightValue = runAST(ast.right, params);
 
   const leftVersionStr = valid(coerce(leftValue));
   const rightVersionStr = valid(coerce(rightValue));
@@ -38,42 +56,31 @@ function runBinaryExpression(ast, params) {
     isSemverMode = true;
   } else if (!leftVersionStr || !rightVersionStr) {
     // 如果左右两边有一个不是版本字符串，则报错
-    throw new Error(`runBinaryExpression runtime error type error ${leftVersionStr}, ${rightVersionStr}`)
+    throw new Error(`runBinaryExpression runtime error: type error, ${leftVersionStr}, ${rightVersionStr}`)
   }
 
   switch (operator) {
+    // >
     case SyntaxKind.GreaterThanToken:
       return isSemverMode ? gt(leftVersionStr, rightVersionStr) : leftValue > rightValue;
-
+    // >=
     case SyntaxKind.GreaterThanEqualsToken:
       return isSemverMode ? gte(leftVersionStr, rightVersionStr) : leftValue >= rightValue;
-
+    // <
     case SyntaxKind.LessThanToken:
       return isSemverMode ? lt(leftVersionStr, rightVersionStr) : leftValue < rightValue;
-
+    // <=
     case SyntaxKind.LessThanEqualsToken:
       return isSemverMode ? lte(leftVersionStr, rightVersionStr) : leftValue <= rightValue;
-
+    // ==
     case SyntaxKind.EqualsEqualsToken:
       return isSemverMode ? eq(leftVersionStr, rightVersionStr) : leftValue == rightValue;
-
-    case SyntaxKind.EqualsEqualsEqualsToken:
-      return leftValue === rightValue;
-
+    // !=
     case SyntaxKind.ExclamationEqualsToken:
       return isSemverMode ? neq(leftVersionStr, rightVersionStr) : leftValue != rightValue;
 
-    case SyntaxKind.ExclamationEqualsEqualsToken:
-      return leftValue !== rightValue;
-
-    case SyntaxKind.AmpersandAmpersandToken:
-      return Boolean(leftValue && rightValue);
-
-    case SyntaxKind.BarBarToken:
-      return Boolean(leftValue || rightValue);
-
     default:
-      throw new Error('runBinaryExpression runtime error')
+      throw new Error('runBinaryExpression runtime error: unknow operator')
   }
 }
 
