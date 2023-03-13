@@ -1,4 +1,4 @@
-let { createParser, runDSL } = require('../dist/bundle.js');
+let { runDSL } = require('../dist/bundle.js');
 
 
 test('test number > true)', () => {
