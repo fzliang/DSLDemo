@@ -44,20 +44,17 @@ export function runCommand(command, params) {
 
   let isSemverMode;
 
-  const leftVersionStr = valid(coerce(leftValue));
-  const rightVersionStr = valid(coerce(rightValue));
+  let leftVersionStr = valid(leftValue);
+  let rightVersionStr = valid(rightValue);
 
   if (!leftVersionStr && !rightVersionStr) {
     // 如果左右两边都不是版本字符串，则降级
     isSemverMode = false;
-  } else if (leftVersionStr && rightVersionStr) {
-    // 如果左右两边都是版本字符串，则使用semver匹配
+  } else if (leftVersionStr || rightVersionStr) {
+    // 如果左右两边有一边是版本字符串，则两边都强制转换为版本队形
     isSemverMode = true;
-  } else if (!leftVersionStr || !rightVersionStr) {
-    // 如果左右两边有一个不是版本字符串，则报错
-    throw new Error(
-      `runBinaryExpression 类型错误: ${leftVersionStr}, ${rightVersionStr}`
-    );
+    leftVersionStr = coerce(leftValue);
+    rightVersionStr = coerce(rightValue);
   }
 
   switch (op) {
