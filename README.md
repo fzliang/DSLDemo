@@ -1,6 +1,9 @@
 # DSLDemo
 
-# 使用方式
+## 用途
+一种动态下发版本匹配规则的方法
+
+## 使用方式
 ```js
 let {
   createParser,
