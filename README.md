@@ -4,6 +4,8 @@
 一种动态下发版本匹配规则的方法
 
 ## 使用方式
+build命令：`npm run build`
+
 ```js
 let {
   createParser,
