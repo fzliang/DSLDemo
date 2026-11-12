@@ -1,12 +1,19 @@
 {
   "name": "test-dsl",
   "version": "1.0.0",
-  "description": "",
-  "main": "src/index.js",
+  "description": "Version-matching DSL: parse once, match many",
+  "main": "dist/bundle.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "require": "./dist/bundle.js"
+    }
+  },
   "scripts": {
     "build": "rollup -c -m",
     "jest": "npm run build && jest",
-    "test": "jest"
+    "test": "npm run build && jest"
   },
   "author": "",
   "license": "ISC",

@@ -1,5 +1,11 @@
 export const CharacterCodes = {
   space: 0x0020,   // " "
+  tab: 0x09,       // \t
+  lineFeed: 0x0A,  // \n
+  verticalTab: 0x0B,
+  formFeed: 0x0C,
+  carriageReturn: 0x0D, // \r
+  dot: 0x2E,       // .
 
   _: 0x5F,
   $: 0x24,
@@ -78,7 +84,14 @@ var textToToken = {
 
 
 function isWhiteSpace(ch) {
-  return ch === CharacterCodes.space;
+  return (
+    ch === CharacterCodes.space ||
+    ch === CharacterCodes.tab ||
+    ch === CharacterCodes.lineFeed ||
+    ch === CharacterCodes.verticalTab ||
+    ch === CharacterCodes.formFeed ||
+    ch === CharacterCodes.carriageReturn
+  );
 }
 
 function isDigit(ch) {
@@ -139,8 +152,7 @@ export function createScanner(text, onError) {
       pos++;
       while (isDigit(text.charCodeAt(pos))) pos++;
     }
-    var end = pos;
-    return +(text.substring(start, end));
+    return text.substring(start, pos);
   }
 
   function getIdentifierToken() {
@@ -212,7 +224,7 @@ export function createScanner(text, onError) {
         case CharacterCodes._7:
         case CharacterCodes._8:
         case CharacterCodes._9:
-          tokenValue = "" + scanNumber();
+          tokenValue = scanNumber();
           return token = SyntaxKind.NumericLiteral;
 
         //  ==, ===

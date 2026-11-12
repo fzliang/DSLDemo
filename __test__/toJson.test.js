@@ -4,36 +4,34 @@ const json = toJson(
   '(s == "ios" && sv >= "13.0.0") || (s == "android" && sv >= "8.0.0" && sv <= "v12")'
 );
 
-console.log(json)
-
-test("test || before lt false)", () => {
+test("json ios below 13 is false", () => {
   expect(runJson(json, { s: "ios", sv: "8.0.1" })).toBe(false);
 });
 
-test("test || before gte true)", () => {
+test("json ios at 13 is true", () => {
   expect(runJson(json, { s: "ios", sv: "13.0.0" })).toBe(true);
 });
 
-test("test || before gte true)", () => {
+test("json ios above 13 is true", () => {
   expect(runJson(json, { s: "ios", sv: "14.0.0" })).toBe(true);
 });
 
-test("test || after gte true)", () => {
+test("json android at 8 is true", () => {
   expect(runJson(json, { s: "android", sv: "8.0.0" })).toBe(true);
 });
 
-test("test || after gt true)", () => {
+test("json android above 8 is true", () => {
   expect(runJson(json, { s: "android", sv: "8.0.1" })).toBe(true);
 });
 
-test("test || after lt true)", () => {
+test("json android 11 is true", () => {
   expect(runJson(json, { s: "android", sv: "11.0.1" })).toBe(true);
 });
 
-test("test || after lte true)", () => {
+test("json android at 12 is true", () => {
   expect(runJson(json, { s: "android", sv: "12.0.0" })).toBe(true);
 });
 
-test("test || after lt false)", () => {
+test("json android above 12 is false", () => {
   expect(runJson(json, { s: "android", sv: "12.0.1" })).toBe(false);
 });
