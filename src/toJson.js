@@ -5,8 +5,10 @@ import { Op } from "./common";
 
 export function astToJson(ast) {
   switch (ast.kind) {
-    case SyntaxKind.StringLiteral:
     case SyntaxKind.NumericLiteral:
+      return Number(ast.text);
+
+    case SyntaxKind.StringLiteral:
       return String(ast.text);
 
     case SyntaxKind.Identifier:
@@ -16,7 +18,7 @@ export function astToJson(ast) {
     case SyntaxKind.BinaryExpression:
       const op = Op[ast.operator];
       if (!op) {
-        throw new Error("错误: 非法操作符", ast.operator);
+        throw new Error(`错误: 非法操作符 ${ast.operator}`);
       }
 
       return [op, astToJson(ast.left), astToJson(ast.right)];

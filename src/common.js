@@ -19,4 +19,8 @@ export const Op = {
   GreaterThanToken: isDev ? ">" : 0x8,
   // >=
   GreaterThanEqualsToken: isDev ? ">=" : 0x9,
+  // ===
+  EqualsEqualsEqualsToken: isDev ? "===" : 0xa,
+  // !==
+  ExclamationEqualsEqualsToken: isDev ? "!==" : 0xb,
 };

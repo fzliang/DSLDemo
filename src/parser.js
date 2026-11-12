@@ -36,13 +36,10 @@ export function createParser(text, onError = () => { }) {
   }
 
   function error(message) {
-    console.log(`源表达式: ${text}`);
     if (onError) {
-      console.log(message)
-      console.log('\n')
       onError(message);
     }
-    throw new Error("解析错误")
+    throw new Error(`解析错误: ${message}`);
   }
 
   function errorAtPos(message) {
@@ -164,7 +161,11 @@ export function createParser(text, onError = () => { }) {
     // 开始扫描
     nextToken();
 
-    return parseExpression();
+    const expr = parseExpression();
+    if (token !== SyntaxKind.EndOfFileToken) {
+      errorAtPos("意外的输入");
+    }
+    return expr;
   }
 
   return {
